@@ -11,7 +11,7 @@
         "x-zuplo-route": {
           "handler": {
             "export": "proxyToBackend",
-            "module": "$import(../modules/backend-proxy)"
+            "module": "$import(./modules/backend-proxy)"
           },
           "policies": {
             "inbound": ["api-key-auth", "rate-limit"]
@@ -104,7 +104,7 @@
         "x-zuplo-route": {
           "handler": {
             "export": "default",
-            "module": "$import(../modules/test-handler)"
+            "module": "$import(./modules/test-handler)"
           }
         },
         "summary": "Test endpoint",
@@ -134,7 +134,7 @@
         "x-zuplo-route": {
           "handler": {
             "export": "healthCheck",
-            "module": "$import(../modules/health-check)"
+            "module": "$import(./modules/health-check)"
           }
         },
         "summary": "Health check",
