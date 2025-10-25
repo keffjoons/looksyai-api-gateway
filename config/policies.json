@@ -1,11 +1,13 @@
 [
   {
     "name": "api-key-auth",
-    "policyType": "api-key-auth-inbound",
+    "policyType": "api-key-inbound",
     "handler": {
-      "export": "ApiKeyAuthInboundPolicy",
+      "export": "ApiKeyInboundPolicy",
       "module": "$import(@zuplo/runtime)",
-      "options": {}
+      "options": {
+        "allowUnauthenticatedRequests": false
+      }
     }
   },
   {
@@ -16,7 +18,7 @@
       "module": "$import(@zuplo/runtime)",
       "options": {
         "rateLimitBy": "user",
-        "requestsPerTimeWindow": 100,
+        "requestsAllowed": 100,
         "timeWindowMinutes": 60
       }
     }

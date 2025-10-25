@@ -53,11 +53,14 @@ export async function proxyToBackend(
     // Log the error
     context.log.error('Backend proxy error:', error);
 
-    // Return error response
+    // Return a test response when backend is down
+    // This helps verify Zuplo is working even if Render isn't
     return new Response(
       JSON.stringify({
         error: 'Backend service unavailable',
-        message: 'Unable to process request at this time'
+        message: 'Render backend at ' + backendUrl + ' is not responding',
+        debug: 'Zuplo gateway is working correctly',
+        timestamp: new Date().toISOString()
       }),
       {
         status: 503,
