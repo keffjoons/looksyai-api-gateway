@@ -2,7 +2,142 @@
   "openapi": "3.1.0",
   "info": {
     "version": "1.0.0",
-    "title": "My Zuplo API"
+    "title": "LooksyAI API Gateway",
+    "description": "API Gateway for LooksyAI multi-angle try-on service"
   },
-  "paths": {}
+  "paths": {
+    "/v1/tryon/multi-angle": {
+      "post": {
+        "x-zuplo-route": {
+          "handler": {
+            "export": "proxyToBackend",
+            "module": "$import(./modules/backend-proxy)"
+          },
+          "policies": {
+            "inbound": [
+              "api-key-auth",
+              "rate-limit"
+            ]
+          }
+        },
+        "summary": "Multi-angle product try-on",
+        "description": "Generate try-on with multiple product images from different angles",
+        "operationId": "multi-angle-tryon",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["userImage", "productImages"],
+                "properties": {
+                  "userImage": {
+                    "type": "string",
+                    "description": "URL or base64 encoded user image"
+                  },
+                  "productImages": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Array of product image URLs or base64 strings"
+                  },
+                  "options": {
+                    "type": "object",
+                    "properties": {
+                      "outputFormat": {
+                        "type": "string",
+                        "enum": ["url", "base64"],
+                        "default": "url"
+                      },
+                      "quality": {
+                        "type": "string",
+                        "enum": ["standard", "high"],
+                        "default": "standard"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "resultUrl": {
+                      "type": "string",
+                      "description": "URL to the result image (when outputFormat=url)"
+                    },
+                    "resultImage": {
+                      "type": "string",
+                      "description": "Base64 encoded result (when outputFormat=base64)"
+                    },
+                    "processedAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "model": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing API key"
+          },
+          "429": {
+            "description": "Too Many Requests - Rate limit exceeded"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "x-zuplo-route": {
+          "handler": {
+            "export": "healthCheck",
+            "module": "$import(./modules/health-check)"
+          }
+        },
+        "summary": "Health check",
+        "description": "Check gateway health status",
+        "operationId": "health-check",
+        "responses": {
+          "200": {
+            "description": "Healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "service": {
+                      "type": "string"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 }
