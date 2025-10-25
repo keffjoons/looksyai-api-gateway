@@ -99,6 +99,36 @@
         }
       }
     },
+    "/test": {
+      "get": {
+        "x-zuplo-route": {
+          "handler": {
+            "export": "default",
+            "module": "$import(./modules/test-handler)"
+          }
+        },
+        "summary": "Test endpoint",
+        "description": "Simple test to verify deployment",
+        "operationId": "test-endpoint",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/health": {
       "get": {
         "x-zuplo-route": {
