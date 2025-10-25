@@ -14,7 +14,7 @@
             "module": "$import(./modules/backend-proxy)"
           },
           "policies": {
-            "inbound": []
+            "inbound": ["api-key-auth", "rate-limit"]
           }
         },
         "summary": "Multi-angle product try-on",

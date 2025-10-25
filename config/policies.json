@@ -1,1 +1,24 @@
-[]
+[
+  {
+    "name": "api-key-auth",
+    "policyType": "api-key-auth-inbound",
+    "handler": {
+      "export": "ApiKeyAuthInboundPolicy",
+      "module": "$import(@zuplo/runtime)",
+      "options": {}
+    }
+  },
+  {
+    "name": "rate-limit",
+    "policyType": "rate-limit-inbound",
+    "handler": {
+      "export": "RateLimitInboundPolicy",
+      "module": "$import(@zuplo/runtime)",
+      "options": {
+        "rateLimitBy": "user",
+        "requestsPerTimeWindow": 100,
+        "timeWindowMinutes": 60
+      }
+    }
+  }
+]
