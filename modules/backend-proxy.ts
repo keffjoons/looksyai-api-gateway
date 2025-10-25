@@ -1,4 +1,4 @@
-import { ZuploContext, ZuploRequest } from "@zuplo/runtime";
+import { ZuploContext, ZuploRequest, environment } from "@zuplo/runtime";
 
 /**
  * Proxy requests to the Render backend with authentication headers
@@ -8,7 +8,7 @@ export async function proxyToBackend(
   context: ZuploContext
 ): Promise<Response> {
   // Get the backend URL from environment
-  const backendUrl = context.env.BACKEND_URL || 'https://looksy-api.onrender.com';
+  const backendUrl = environment.BACKEND_URL || 'https://looksy-api.onrender.com';
 
   // Create the proxied URL
   const url = new URL(request.url);
@@ -19,14 +19,17 @@ export async function proxyToBackend(
   const headers = new Headers(request.headers);
 
   // Add consumer information from Zuplo's API key authentication
-  if (context.user) {
-    headers.set('X-Consumer-Id', context.user.sub || 'anonymous');
-    headers.set('X-API-Key-Id', context.user.keyId || '');
+  if (request.user) {
+    headers.set('X-Consumer-Id', request.user.sub || 'anonymous');
+    // Additional user data if available
+    if (request.user.data?.keyId) {
+      headers.set('X-API-Key-Id', request.user.data.keyId);
+    }
   }
 
   // Add optional gateway secret for backend verification
-  if (context.env.GATEWAY_SECRET) {
-    headers.set('X-Gateway-Secret', context.env.GATEWAY_SECRET);
+  if (environment.GATEWAY_SECRET) {
+    headers.set('X-Gateway-Secret', environment.GATEWAY_SECRET);
   }
 
   // Create the backend request

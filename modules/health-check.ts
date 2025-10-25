@@ -1,4 +1,4 @@
-import { ZuploContext, ZuploRequest } from "@zuplo/runtime";
+import { ZuploContext, ZuploRequest, environment } from "@zuplo/runtime";
 
 /**
  * Simple health check endpoint
@@ -12,7 +12,7 @@ export async function healthCheck(
       status: 'healthy',
       service: 'looksyai-api-gateway',
       timestamp: new Date().toISOString(),
-      environment: context.env.NODE_ENV || 'production'
+      environment: environment.NODE_ENV || 'production'
     }),
     {
       status: 200,
