@@ -1,28 +1,18 @@
 {
-  "openapi": "3.0.0",
+  "openapi": "3.1.0",
   "info": {
-    "title": "LooksyAI API Gateway",
-    "version": "1.0.0",
-    "description": "Virtual try-on API for e-commerce applications"
+    "title": "LooksyAI API",
+    "version": "1.0.0"
   },
-  "servers": [
-    {
-      "url": "https://looksyai-api-main-2c962bd.zuplo.app"
-    }
-  ],
   "paths": {
     "/health": {
+      "x-zuplo-path": {
+        "pathMode": "open-api"
+      },
       "get": {
-        "summary": "Health check",
-        "operationId": "health-check",
-        "tags": ["System"],
-        "responses": {
-          "200": {
-            "description": "Service is healthy"
-          }
-        },
+        "summary": "Health Check",
         "x-zuplo-route": {
-          "corsPolicy": "anything-goes",
+          "corsPolicy": "none",
           "handler": {
             "export": "urlRewriteHandler",
             "module": "$import(@zuplo/runtime)",
@@ -30,171 +20,36 @@
               "rewritePattern": "https://looksy-api.onrender.com/health"
             }
           }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
         }
       }
     },
     "/v1/tryon": {
+      "x-zuplo-path": {
+        "pathMode": "open-api"
+      },
       "post": {
         "summary": "Virtual Try-On",
-        "operationId": "virtual-tryon",
-        "tags": ["Try-On"],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": ["model_image", "product_image", "product_type"],
-                "properties": {
-                  "model_image": {
-                    "type": "string",
-                    "description": "URL or base64 encoded model image"
-                  },
-                  "product_image": {
-                    "type": "string",
-                    "description": "URL or base64 encoded product image"
-                  },
-                  "product_type": {
-                    "type": "string",
-                    "enum": ["upper_body", "lower_body", "dresses"],
-                    "description": "Type of clothing product"
-                  },
-                  "output_format": {
-                    "type": "string",
-                    "enum": ["url", "base64"],
-                    "default": "url",
-                    "description": "Format for the output image"
-                  }
-                }
-              }
+        "x-zuplo-route": {
+          "corsPolicy": "none",
+          "handler": {
+            "export": "urlRewriteHandler",
+            "module": "$import(@zuplo/runtime)",
+            "options": {
+              "rewritePattern": "https://looksy-api.onrender.com/v1/tryon"
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Successful try-on",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "result_image": {
-                      "type": "string",
-                      "description": "URL or base64 of the result image"
-                    },
-                    "model_info": {
-                      "type": "object"
-                    },
-                    "product_info": {
-                      "type": "object"
-                    },
-                    "processing_time_ms": {
-                      "type": "number"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request"
-          },
-          "401": {
-            "description": "Unauthorized - Invalid or missing API key"
-          },
-          "429": {
-            "description": "Too many requests - Rate limit exceeded"
-          }
-        },
-        "x-zuplo-route": {
-          "corsPolicy": "anything-goes",
-          "policies": [
-            {
-              "export": "ApiKeyInboundPolicy",
-              "module": "$import(@zuplo/runtime)",
-              "options": {
-                "header": "x-api-key",
-                "forwardAuthorizationHeader": false
-              }
-            },
-            {
-              "export": "RateLimitInboundPolicy",
-              "module": "$import(@zuplo/runtime)",
-              "options": {
-                "rateLimitBy": "user",
-                "requestsAllowed": 10,
-                "timeWindowMinutes": 1
-              }
-            }
-          ],
-          "handler": {
-            "export": "urlRewriteHandler",
-            "module": "$import(@zuplo/runtime)",
-            "options": {
-              "rewritePattern": "https://looksy-api.onrender.com/v1/tryon",
-              "forwardSearch": true
-            }
-          }
-        }
-      }
-    },
-    "/docs": {
-      "get": {
-        "summary": "API Documentation",
-        "operationId": "api-docs",
-        "tags": ["Documentation"],
-        "responses": {
-          "200": {
-            "description": "Swagger UI Documentation"
-          }
-        },
-        "x-zuplo-route": {
-          "corsPolicy": "anything-goes",
-          "handler": {
-            "export": "urlRewriteHandler",
-            "module": "$import(@zuplo/runtime)",
-            "options": {
-              "rewritePattern": "https://looksy-api.onrender.com/docs"
-            }
-          }
-        }
-      }
-    },
-    "/openapi.json": {
-      "get": {
-        "summary": "OpenAPI Specification",
-        "operationId": "openapi-spec",
-        "tags": ["Documentation"],
-        "responses": {
-          "200": {
-            "description": "OpenAPI JSON specification"
-          }
-        },
-        "x-zuplo-route": {
-          "corsPolicy": "anything-goes",
-          "handler": {
-            "export": "urlRewriteHandler",
-            "module": "$import(@zuplo/runtime)",
-            "options": {
-              "rewritePattern": "https://looksy-api.onrender.com/openapi.json"
-            }
+            "description": "OK"
           }
         }
       }
     }
-  },
-  "components": {
-    "securitySchemes": {
-      "ApiKey": {
-        "type": "apiKey",
-        "in": "header",
-        "name": "x-api-key"
-      }
-    }
-  },
-  "security": [
-    {
-      "ApiKey": []
-    }
-  ]
+  }
 }
