@@ -1,58 +1,69 @@
 {
-  "openapi": "3.1.0",
+  "openapi": "3.0.0",
   "info": {
-    "version": "1.0.0",
     "title": "LooksyAI API Gateway",
-    "description": "API Gateway for LooksyAI multi-angle try-on service"
+    "version": "1.0.0",
+    "description": "Virtual try-on API for e-commerce applications"
   },
+  "servers": [
+    {
+      "url": "https://looksyai-api-main-2c962bd.zuplo.app"
+    }
+  ],
   "paths": {
-    "/v1/tryon/multi-angle": {
-      "post": {
-        "x-zuplo-route": {
-          "handler": {
-            "export": "proxyToBackend",
-            "module": "$import(./modules/backend-proxy)"
-          },
-          "policies": {
-            "inbound": ["api-key-auth", "rate-limit"]
+    "/health": {
+      "get": {
+        "summary": "Health check",
+        "operationId": "health-check",
+        "tags": ["System"],
+        "responses": {
+          "200": {
+            "description": "Service is healthy"
           }
         },
-        "summary": "Multi-angle product try-on",
-        "description": "Generate try-on with multiple product images from different angles",
-        "operationId": "multi-angle-tryon",
+        "x-zuplo-route": {
+          "corsPolicy": "anything-goes",
+          "handler": {
+            "export": "urlRewriteHandler",
+            "module": "$import(@zuplo/runtime)",
+            "options": {
+              "rewritePattern": "https://looksy-api.onrender.com/health"
+            }
+          }
+        }
+      }
+    },
+    "/v1/tryon": {
+      "post": {
+        "summary": "Virtual Try-On",
+        "operationId": "virtual-tryon",
+        "tags": ["Try-On"],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["userImage", "productImages"],
+                "required": ["model_image", "product_image", "product_type"],
                 "properties": {
-                  "userImage": {
+                  "model_image": {
                     "type": "string",
-                    "description": "URL or base64 encoded user image"
+                    "description": "URL or base64 encoded model image"
                   },
-                  "productImages": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    },
-                    "description": "Array of product image URLs or base64 strings"
+                  "product_image": {
+                    "type": "string",
+                    "description": "URL or base64 encoded product image"
                   },
-                  "options": {
-                    "type": "object",
-                    "properties": {
-                      "outputFormat": {
-                        "type": "string",
-                        "enum": ["url", "base64"],
-                        "default": "url"
-                      },
-                      "quality": {
-                        "type": "string",
-                        "enum": ["standard", "high"],
-                        "default": "standard"
-                      }
-                    }
+                  "product_type": {
+                    "type": "string",
+                    "enum": ["upper_body", "lower_body", "dresses"],
+                    "description": "Type of clothing product"
+                  },
+                  "output_format": {
+                    "type": "string",
+                    "enum": ["url", "base64"],
+                    "default": "url",
+                    "description": "Format for the output image"
                   }
                 }
               }
@@ -61,110 +72,129 @@
         },
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "Successful try-on",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "resultUrl": {
+                    "result_image": {
                       "type": "string",
-                      "description": "URL to the result image (when outputFormat=url)"
+                      "description": "URL or base64 of the result image"
                     },
-                    "resultImage": {
-                      "type": "string",
-                      "description": "Base64 encoded result (when outputFormat=base64)"
+                    "model_info": {
+                      "type": "object"
                     },
-                    "processedAt": {
-                      "type": "string",
-                      "format": "date-time"
+                    "product_info": {
+                      "type": "object"
                     },
-                    "model": {
-                      "type": "string"
+                    "processing_time_ms": {
+                      "type": "number"
                     }
                   }
                 }
               }
             }
+          },
+          "400": {
+            "description": "Bad request"
           },
           "401": {
             "description": "Unauthorized - Invalid or missing API key"
           },
           "429": {
-            "description": "Too Many Requests - Rate limit exceeded"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/test": {
-      "get": {
-        "x-zuplo-route": {
-          "handler": {
-            "export": "default",
-            "module": "$import(./modules/test-handler)"
+            "description": "Too many requests - Rate limit exceeded"
           }
         },
-        "summary": "Test endpoint",
-        "description": "Simple test to verify deployment",
-        "operationId": "test-endpoint",
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
+        "x-zuplo-route": {
+          "corsPolicy": "anything-goes",
+          "policies": [
+            {
+              "export": "ApiKeyInboundPolicy",
+              "module": "$import(@zuplo/runtime)",
+              "options": {
+                "header": "x-api-key",
+                "forwardAuthorizationHeader": false
               }
+            },
+            {
+              "export": "RateLimitInboundPolicy",
+              "module": "$import(@zuplo/runtime)",
+              "options": {
+                "rateLimitBy": "user",
+                "requestsAllowed": 10,
+                "timeWindowMinutes": 1
+              }
+            }
+          ],
+          "handler": {
+            "export": "urlRewriteHandler",
+            "module": "$import(@zuplo/runtime)",
+            "options": {
+              "rewritePattern": "https://looksy-api.onrender.com/v1/tryon",
+              "forwardSearch": true
             }
           }
         }
       }
     },
-    "/health": {
+    "/docs": {
       "get": {
-        "x-zuplo-route": {
-          "handler": {
-            "export": "healthCheck",
-            "module": "$import(./modules/health-check)"
-          }
-        },
-        "summary": "Health check",
-        "description": "Check gateway health status",
-        "operationId": "health-check",
+        "summary": "API Documentation",
+        "operationId": "api-docs",
+        "tags": ["Documentation"],
         "responses": {
           "200": {
-            "description": "Healthy",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "string"
-                    },
-                    "service": {
-                      "type": "string"
-                    },
-                    "timestamp": {
-                      "type": "string",
-                      "format": "date-time"
-                    }
-                  }
-                }
-              }
+            "description": "Swagger UI Documentation"
+          }
+        },
+        "x-zuplo-route": {
+          "corsPolicy": "anything-goes",
+          "handler": {
+            "export": "urlRewriteHandler",
+            "module": "$import(@zuplo/runtime)",
+            "options": {
+              "rewritePattern": "https://looksy-api.onrender.com/docs"
+            }
+          }
+        }
+      }
+    },
+    "/openapi.json": {
+      "get": {
+        "summary": "OpenAPI Specification",
+        "operationId": "openapi-spec",
+        "tags": ["Documentation"],
+        "responses": {
+          "200": {
+            "description": "OpenAPI JSON specification"
+          }
+        },
+        "x-zuplo-route": {
+          "corsPolicy": "anything-goes",
+          "handler": {
+            "export": "urlRewriteHandler",
+            "module": "$import(@zuplo/runtime)",
+            "options": {
+              "rewritePattern": "https://looksy-api.onrender.com/openapi.json"
             }
           }
         }
       }
     }
-  }
+  },
+  "components": {
+    "securitySchemes": {
+      "ApiKey": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-api-key"
+      }
+    }
+  },
+  "security": [
+    {
+      "ApiKey": []
+    }
+  ]
 }
