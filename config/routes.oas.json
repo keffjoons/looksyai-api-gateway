@@ -7,8 +7,7 @@
   },
   "servers": [
     {
-      "url": "https://looksyai-api-main-2c962bd.zuplo.app",
-      "description": "Production"
+      "url": "https://looksyai-api-main-2c962bd.zuplo.app"
     }
   ],
   "paths": {
@@ -32,7 +31,7 @@
         },
         "responses": {
           "200": {
-            "description": "Service is healthy"
+            "description": "OK"
           }
         }
       }
@@ -42,15 +41,10 @@
         "pathMode": "open-api"
       },
       "post": {
-        "summary": "Multi-Angle Virtual Try-On",
+        "summary": "Virtual Try-On",
         "operationId": "virtual-tryon",
         "tags": ["Try-On"],
         "description": "Generate virtual try-on with multiple product angles",
-        "security": [
-          {
-            "ApiKeyAuth": []
-          }
-        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -65,27 +59,10 @@
                   },
                   "productImages": {
                     "type": "array",
-                    "minItems": 1,
-                    "maxItems": 16,
                     "items": {
                       "type": "string"
                     },
                     "description": "Array of product image URLs or base64"
-                  },
-                  "options": {
-                    "type": "object",
-                    "properties": {
-                      "outputFormat": {
-                        "type": "string",
-                        "enum": ["url", "base64"],
-                        "default": "url"
-                      },
-                      "quality": {
-                        "type": "string",
-                        "enum": ["standard", "high"],
-                        "default": "standard"
-                      }
-                    }
                   }
                 }
               }
@@ -94,66 +71,22 @@
         },
         "x-zuplo-route": {
           "corsPolicy": "anything-goes",
-          "policies": {
-            "inbound": [
-              {
-                "name": "api-key-auth",
-                "policyType": "api-key-inbound",
-                "handler": {
-                  "export": "ApiKeyInboundPolicy",
-                  "module": "$import(@zuplo/runtime)",
-                  "options": {
-                    "allowUnauthenticatedRequests": false
-                  }
-                }
-              }
-            ]
-          },
           "handler": {
             "export": "urlRewriteHandler",
             "module": "$import(@zuplo/runtime)",
             "options": {
-              "rewritePattern": "https://looksy-api.onrender.com/v1/tryon/multi-angle",
-              "forwardSearch": true
+              "rewritePattern": "https://looksy-api.onrender.com/v1/tryon/multi-angle"
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Successful try-on",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "resultUrl": {
-                      "type": "string"
-                    },
-                    "resultImage": {
-                      "type": "string"
-                    },
-                    "processedAt": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            }
+            "description": "Successful try-on"
           },
           "401": {
-            "description": "Unauthorized - Invalid or missing API key"
+            "description": "Unauthorized"
           }
         }
-      }
-    }
-  },
-  "components": {
-    "securitySchemes": {
-      "ApiKeyAuth": {
-        "type": "apiKey",
-        "in": "header",
-        "name": "Authorization",
-        "description": "API key authentication. Use format: Bearer YOUR_API_KEY"
       }
     }
   }
