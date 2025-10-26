@@ -1,4 +1,7 @@
 {
   "version": 1,
-  "compatibilityDate": "2025-02-06"
+  "compatibilityDate": "2025-01-01",
+  "project": "looksyai-api-gateway",
+  "routes": "config/routes.oas.json",
+  "policies": "config/policies.json"
 }
