@@ -11,6 +11,7 @@
       },
       "get": {
         "summary": "Health Check",
+        "operationId": "health-check",
         "x-zuplo-route": {
           "corsPolicy": "none",
           "handler": {
@@ -34,6 +35,7 @@
       },
       "post": {
         "summary": "Virtual Try-On",
+        "operationId": "virtual-tryon",
         "x-zuplo-route": {
           "corsPolicy": "none",
           "handler": {
