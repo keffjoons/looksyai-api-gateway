@@ -42,7 +42,7 @@
             "export": "urlRewriteHandler",
             "module": "$import(@zuplo/runtime)",
             "options": {
-              "rewritePattern": "https://looksy-api.onrender.com/v1/tryon"
+              "rewritePattern": "https://looksy-api.onrender.com/v1/tryon/multi-angle"
             }
           }
         },
