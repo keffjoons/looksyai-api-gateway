@@ -1,7 +1,3 @@
 import { defineConfig } from "vite";
 
-export default defineConfig({
-  build: {
-    ssr: true,
-  },
-});
+export default defineConfig({});
