@@ -1,4 +1,6 @@
-export default {
+import type { ZudokuConfig } from "zudoku";
+
+const config: ZudokuConfig = {
   page: {
     title: "LooksyAI API Documentation",
   },
@@ -33,3 +35,5 @@ export default {
     files: "/pages/**/*.{md,mdx}",
   },
 };
+
+export default config;
