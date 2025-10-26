@@ -1,6 +1,4 @@
 {
   "version": 1,
-  "compatibilityDate": "2025-01-01",
-  "routes": "config/routes.oas.json",
-  "policies": "config/policies.json"
+  "compatibilityDate": "2025-01-01"
 }
