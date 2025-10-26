@@ -7,9 +7,29 @@
         "export": "ApiKeyInboundPolicy",
         "module": "$import(@zuplo/runtime)",
         "options": {
-          "allowUnauthenticatedRequests": false,
-          "forwardConsumerIdHeader": true,
-          "forwardApiKeyIdHeader": true
+          "allowUnauthenticatedRequests": false
+        }
+      }
+    },
+    {
+      "name": "set-auth-headers",
+      "policyType": "set-headers-inbound",
+      "handler": {
+        "export": "SetHeadersInboundPolicy",
+        "module": "$import(@zuplo/runtime)",
+        "options": {
+          "headers": [
+            {
+              "name": "x-consumer-id",
+              "value": "${ request.user.sub }",
+              "overwrite": true
+            },
+            {
+              "name": "x-api-key-id",
+              "value": "${ request.user.sub }",
+              "overwrite": true
+            }
+          ]
         }
       }
     },

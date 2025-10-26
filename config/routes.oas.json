@@ -72,7 +72,7 @@
         "x-zuplo-route": {
           "corsPolicy": "anything-goes",
           "policies": {
-            "inbound": ["api-key-auth", "rate-limit"]
+            "inbound": ["api-key-auth", "set-auth-headers", "rate-limit"]
           },
           "handler": {
             "export": "urlRewriteHandler",
