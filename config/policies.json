@@ -7,7 +7,9 @@
         "export": "ApiKeyInboundPolicy",
         "module": "$import(@zuplo/runtime)",
         "options": {
-          "allowUnauthenticatedRequests": false
+          "allowUnauthenticatedRequests": false,
+          "forwardConsumerIdHeader": true,
+          "forwardApiKeyIdHeader": true
         }
       }
     },
