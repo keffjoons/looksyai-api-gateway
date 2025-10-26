@@ -1,0 +1,27 @@
+{
+  "name": "LooksyAI Developer Portal",
+  "description": "Virtual Try-On API for E-commerce",
+  "enableAuthentication": true,
+  "apis": [
+    {
+      "type": "file",
+      "path": "./routes.oas.json",
+      "enabled": true
+    }
+  ],
+  "styling": {
+    "logo": {
+      "url": "https://looksy.ai/logo.png",
+      "altText": "LooksyAI"
+    },
+    "primaryColor": "#4F46E5",
+    "theme": "light"
+  },
+  "pages": [
+    {
+      "title": "Getting Started",
+      "path": "/getting-started",
+      "content": "# Getting Started\n\n## Authentication\n\nAll API requests require an API key. Include it in the Authorization header:\n\n```bash\nAuthorization: Bearer YOUR_API_KEY\n```\n\n## Quick Example\n\n```bash\ncurl -X POST https://looksyai-api-main-2c962bd.zuplo.app/v1/tryon \\\n  -H \"Authorization: Bearer YOUR_API_KEY\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"userImage\": \"https://example.com/user.jpg\",\n    \"productImages\": [\"https://example.com/product.jpg\"]\n  }'\n```"
+    }
+  ]
+}

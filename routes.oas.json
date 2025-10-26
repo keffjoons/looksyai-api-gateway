@@ -2,8 +2,15 @@
   "openapi": "3.1.0",
   "info": {
     "title": "LooksyAI API",
-    "version": "1.0.0"
+    "version": "1.0.0",
+    "description": "Virtual try-on API for e-commerce applications"
   },
+  "servers": [
+    {
+      "url": "https://looksyai-api-main-2c962bd.zuplo.app",
+      "description": "Production"
+    }
+  ],
   "paths": {
     "/health": {
       "x-zuplo-path": {
@@ -12,8 +19,9 @@
       "get": {
         "summary": "Health Check",
         "operationId": "health-check",
+        "tags": ["System"],
         "x-zuplo-route": {
-          "corsPolicy": "none",
+          "corsPolicy": "anything-goes",
           "handler": {
             "export": "urlRewriteHandler",
             "module": "$import(@zuplo/runtime)",
@@ -24,7 +32,7 @@
         },
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Service is healthy"
           }
         }
       }
@@ -34,23 +42,118 @@
         "pathMode": "open-api"
       },
       "post": {
-        "summary": "Virtual Try-On",
+        "summary": "Multi-Angle Virtual Try-On",
         "operationId": "virtual-tryon",
+        "tags": ["Try-On"],
+        "description": "Generate virtual try-on with multiple product angles",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["userImage", "productImages"],
+                "properties": {
+                  "userImage": {
+                    "type": "string",
+                    "description": "URL or base64 encoded user image"
+                  },
+                  "productImages": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 16,
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Array of product image URLs or base64"
+                  },
+                  "options": {
+                    "type": "object",
+                    "properties": {
+                      "outputFormat": {
+                        "type": "string",
+                        "enum": ["url", "base64"],
+                        "default": "url"
+                      },
+                      "quality": {
+                        "type": "string",
+                        "enum": ["standard", "high"],
+                        "default": "standard"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
         "x-zuplo-route": {
-          "corsPolicy": "none",
+          "corsPolicy": "anything-goes",
+          "policies": {
+            "inbound": [
+              {
+                "name": "api-key-auth",
+                "policyType": "api-key-inbound",
+                "handler": {
+                  "export": "ApiKeyInboundPolicy",
+                  "module": "$import(@zuplo/runtime)",
+                  "options": {
+                    "allowUnauthenticatedRequests": false
+                  }
+                }
+              }
+            ]
+          },
           "handler": {
             "export": "urlRewriteHandler",
             "module": "$import(@zuplo/runtime)",
             "options": {
-              "rewritePattern": "https://looksy-api.onrender.com/v1/tryon/multi-angle"
+              "rewritePattern": "https://looksy-api.onrender.com/v1/tryon/multi-angle",
+              "forwardSearch": true
             }
           }
         },
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Successful try-on",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "resultUrl": {
+                      "type": "string"
+                    },
+                    "resultImage": {
+                      "type": "string"
+                    },
+                    "processedAt": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing API key"
           }
         }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "API key authentication. Use format: Bearer YOUR_API_KEY"
       }
     }
   }
