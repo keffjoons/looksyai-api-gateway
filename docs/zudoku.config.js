@@ -26,10 +26,10 @@ export default {
   redirects: [{ from: "/", to: "/docs" }],
   apis: {
     type: "file",
-    input: "./config/routes.oas.json",
+    input: "../config/routes.oas.json",
     navigationId: "api",
   },
   docs: {
-    files: "/docs/pages/**/*.{md,mdx}",
+    files: "/pages/**/*.{md,mdx}",
   },
 };
