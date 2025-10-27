@@ -1,6 +1,5 @@
-import type { ZudokuConfig } from "zudoku";
-
-const config: ZudokuConfig = {
+/** @type {import('zudoku').ZudokuConfig} */
+const config = {
   page: {
     title: "LooksyAI API Documentation",
   },
