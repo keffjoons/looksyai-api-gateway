@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "zudoku dev",
-    "build": "zudoku build"
+    "dev": "zudoku dev --zuplo",
+    "build": "zudoku build --zuplo"
   },
   "dependencies": {
     "react": "^19.0.0",
