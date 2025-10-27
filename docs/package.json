@@ -9,6 +9,6 @@
   "dependencies": {
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "zudoku": "^0.40.1"
+    "zudoku": "^0.62.0"
   }
 }
